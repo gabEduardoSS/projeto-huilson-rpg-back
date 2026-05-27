@@ -46,6 +46,10 @@ class BatalhaService(private val repository: PersonagemRepository) {
 
     fun executarAcao(nomeAtacante: String, acao: String): Pair<String, Boolean> {
         println("1: $jogador1, 2: $jogador2")
+        if(jogador2 == null && acao.uppercase() == "FUGIR"){
+            limparArena()
+            return Pair("🏃 $nomeAtacante correu antes mesmo da batalha começar", true)
+        }
         if (jogador1 == null || jogador2 == null) return Pair("Aguardando mais guerreiros na arena...", false)
         if (nomeAtacante != nomeJogadorDaVez) return Pair("Calma, $nomeAtacante! Ainda não é a sua vez.", false)
 

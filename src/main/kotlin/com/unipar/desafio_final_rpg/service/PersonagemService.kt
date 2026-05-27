@@ -21,6 +21,10 @@ class PersonagemService (
         return personagemRepository.findAll()
     }
 
+    fun buscarId(id: Long): Personagem {
+        return personagemRepository.findById(id).orElseThrow()
+    }
+
 
     //Excluir
     fun excluirPersonagem(id: Long) {
