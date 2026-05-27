@@ -9,24 +9,25 @@ class PersonagemService (
     val personagemRepository: PersonagemRepository
 ){
 
+    // Salva o personagem no banco
     fun salvarPersonagem(personagem: Personagem) : Personagem {
             //Se não tenho um Primary Key vou criar uma nova entidade
-            //se já tiver um nome igual no banco, somente vai editar
             //Se tenho um Primary Key somente vou editar
             return personagemRepository.save(personagem)
     }
 
-    //Buscar
+    // Busca todos os personagens no banco
     fun buscarTodos(): List<Personagem>{
         return personagemRepository.findAll()
     }
 
+    // Busca um personagem específico pelo ID no banco
     fun buscarId(id: Long): Personagem {
         return personagemRepository.findById(id).orElseThrow()
     }
 
 
-    //Excluir
+    // Exclui um personagem específico no banco pelo ID
     fun excluirPersonagem(id: Long) {
         personagemRepository.deleteById(id)
     }

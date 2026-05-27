@@ -4,5 +4,7 @@ import com.unipar.desafio_final_rpg.model.Personagem
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
+
+// Respositório que gerencia o personagem(e consequentemente suas classes) no banco
 @Repository
 interface PersonagemRepository : JpaRepository<Personagem, Long>

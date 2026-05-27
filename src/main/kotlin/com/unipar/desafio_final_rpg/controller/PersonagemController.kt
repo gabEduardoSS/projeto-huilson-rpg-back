@@ -24,7 +24,6 @@ import tools.jackson.databind.JsonNode
 @RestController
 @RequestMapping("/character")
 class PersonagemController (
-    // Injeção de dependência via construtor (padrão do Spring/Kotlin)
     // O Spring cria e gerencia as instâncias de PersonagemService e RestClient
     val personagemService: PersonagemService,
 
@@ -32,8 +31,12 @@ class PersonagemController (
     // Usado para fazer requisições HTTP para outros servidores
     val restClient: RestClient
 ) {
+
+    // @PostMapping: este endpoint responde a requisições HTTP POST em "/save"
+    // É aqui que esta máquina RECEBE mensagens enviadas pelo sistema
+    // A função recebe uma requisição para salvar um personagem no banco
     @PostMapping("/save")
-    fun salvarPersonagem(@RequestBody body: JsonNode): String{
+    fun salvarPersonagem(@RequestBody body: JsonNode): String{ // body contendo as informações do personagem vindo do front-end
         try{
             var personagem: Personagem = when(body.get("charClass").asString()){
                 "guerreiro" -> personagemService.salvarPersonagem(Guerreiro(nome=body.get("name").asString(), forca=body.get("forca").asInt(), velocidade=body.get("velocidade").asInt(), vida=body.get("vida").asInt()))
@@ -47,31 +50,37 @@ class PersonagemController (
         return "Personagem atualizado"
     }
 
+    // @DeleteMapping: este endpoint responde a requisições HTTP DELETE em "/delete/{id}"
+    // É aqui que esta máquina RECEBE mensagens enviadas pelo sistema
+    // A função recebe uma requisição para deletar um personagem no banco
     @DeleteMapping("/delete/{id}")
-    fun deletarPersonagem(@PathVariable id: Long): ResponseEntity<Any> {
+    fun deletarPersonagem(@PathVariable id: Long): ResponseEntity<Any> { // o ID do personagem vem pela URL no método DELETE
         return try {
-            val personagem = personagemService.buscarId(id)
+            val personagem = personagemService.buscarId(id) // Buscar o personagem no banco pelo ID
 
             if (personagem != null) {
-                personagemService.excluirPersonagem(id)
-                ResponseEntity.ok(mapOf(
+                personagemService.excluirPersonagem(id) // Tenta excluir o personagem
+                ResponseEntity.ok(mapOf( // Responde que o personagem foi excluido com sucesso
                     "status" to "sucesso",
                     "mensagem" to "Personagem ${personagem.nome}, com o ID ${personagem.id}, deletado!"
                 ))
             } else {
-                ResponseEntity.status(404).body(mapOf(
+                ResponseEntity.status(404).body(mapOf( // Responde que o personagem não foi encontrado
                     "status" to "erro",
                     "mensagem" to "Personagem não encontrado"
                 ))
             }
         } catch (e: Exception) {
-            ResponseEntity.status(500).body(mapOf(
+            ResponseEntity.status(500).body(mapOf( // Responde que o sistema encontrou um erro desconhecido
                 "status" to "erro",
                 "mensagem" to (e.message ?: "Erro desconhecido")
             ))
         }
     }
 
+    // @GetMapping: este endpoint responde a requisições HTTP Get em "/getall"
+    // É aqui que esta máquina RETORNA mensagens enviadas pelo sistema
+    // A função recebe uma requisição para procurar todos os personagens no banco e retorna uma lista com eles
     @GetMapping("/getall")
     fun listPersonagem(): List<Personagem>{
         return personagemService.buscarTodos()
